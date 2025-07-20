@@ -14,11 +14,10 @@ public class Player : MonoBehaviour
 
     [Header("Movement")]
     public Rigidbody2D rb;
-    public float xMoveSpeed = 15f;
-    public float yMoveSpeed = 15f;
+    [SerializeField] private float xMoveSpeed;
+    [SerializeField] private float yMoveSpeed;
     float xMovement;
     float yMovement;
-    private bool isFacingRight = true;
 
     [Header("Dashing")]
     public float dashSpeed = 40f;
@@ -57,8 +56,6 @@ public class Player : MonoBehaviour
     {
         if (isDashing) return;
         rb.linearVelocity = new Vector2(xMovement * xMoveSpeed, yMovement * yMoveSpeed);
-
-        Flip();
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -77,17 +74,6 @@ public class Player : MonoBehaviour
 
         yMovement = context.ReadValue<Vector2>().y;
         animator.SetFloat("InputY", yMovement);
-    }
-
-    private void Flip()
-    {
-        if (isFacingRight && xMovement < 0 || !isFacingRight && xMovement > 0)
-        {
-            isFacingRight = !isFacingRight;
-            Vector3 ls = playerTransform.localScale;
-            ls.x *= -1f;
-            playerTransform.localScale = ls;
-        }
     }
 
     public void Dash(InputAction.CallbackContext context)

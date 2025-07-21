@@ -70,6 +70,8 @@ public class Player : MonoBehaviour
             animator.SetBool("isMoving", false);
             animator.SetFloat("LastInputX", xMovement);
             animator.SetFloat("LastInputY", yMovement);
+            xMovementLast = xMovement;
+            yMovementLast = yMovement;
         }
 
         xMovement = context.ReadValue<Vector2>().x;
@@ -96,12 +98,12 @@ public class Player : MonoBehaviour
         spriteRenderer.color = new Color(0.528f, 0.528f, 0.528f, 1f);
 
         // SoundManager.instance.PlaySFXClip(dashSFX, 4f);
-        if (xMovement != 0 && yMovement != 0)
+        if (xMovement != 0 || yMovement != 0)
         {
             dashDirection = new Vector2(xMovement, yMovement).normalized;
 
         }
-        else if (xMovementLast != 0 && yMovementLast != 0)
+        else if (xMovementLast != 0 || yMovementLast != 0)
         {
             dashDirection = new Vector2(xMovementLast, yMovementLast).normalized;
         }

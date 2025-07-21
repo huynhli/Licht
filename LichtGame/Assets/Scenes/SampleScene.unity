@@ -414,12 +414,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 8
   rb: {fileID: 0}
-  xMoveSpeed: 4
-  yMoveSpeed: 2
+  xMoveSpeed: 6
+  yMoveSpeed: 4
   dashAbilityGet: 0
   dashSpeed: 10
   dashDuration: 0.2
-  dashCooldown: 1
+  dashCooldown: 0.7
   invincibilityDuration: 1.5
   isInvincible: 0
   dashSFX: {fileID: 0}

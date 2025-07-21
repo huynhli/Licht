@@ -416,7 +416,8 @@ MonoBehaviour:
   rb: {fileID: 0}
   xMoveSpeed: 4
   yMoveSpeed: 2
-  dashSpeed: 40
+  dashAbilityGet: 0
+  dashSpeed: 10
   dashDuration: 0.2
   dashCooldown: 1
   invincibilityDuration: 1.5

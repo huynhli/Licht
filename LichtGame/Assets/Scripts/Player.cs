@@ -16,13 +16,16 @@ public class Player : MonoBehaviour
     public Rigidbody2D rb;
     [SerializeField] private float xMoveSpeed;
     [SerializeField] private float yMoveSpeed;
+    private float xMovementLast = 0f;
+    private float yMovementLast = 0f;
     float xMovement;
     float yMovement;
 
     [Header("Dashing")]
-    public float dashSpeed = 40f;
-    public float dashDuration = 0.2f;
-    public float dashCooldown = 1f;
+    public bool dashAbilityGet = false;
+    [SerializeField] private float dashSpeed = 10f;
+    [SerializeField] private float dashDuration = 0.3f;
+    [SerializeField] private float dashCooldown = 1f;
     private Vector2 dashDirection;
     bool isDashing;
     bool canDash = true;
@@ -90,10 +93,23 @@ public class Player : MonoBehaviour
         isDashing = true;
         isInvincible = true;
         trailRenderer.emitting = true;
+        spriteRenderer.color = new Color(0.528f, 0.528f, 0.528f, 1f);
 
         // SoundManager.instance.PlaySFXClip(dashSFX, 4f);
+        if (xMovement != 0 && yMovement != 0)
+        {
+            dashDirection = new Vector2(xMovement, yMovement).normalized;
 
-        dashDirection = new Vector2(xMovement, yMovement).normalized;
+        }
+        else if (xMovementLast != 0 && yMovementLast != 0)
+        {
+            dashDirection = new Vector2(xMovementLast, yMovementLast).normalized;
+        }
+        else
+        {
+            dashDirection = Vector2.right;
+        }
+        
 
         rb.linearVelocity = new Vector2(dashDirection.x * dashSpeed, dashDirection.y * dashSpeed);
 
@@ -102,6 +118,7 @@ public class Player : MonoBehaviour
         isDashing = false;
         trailRenderer.emitting = false;
         isInvincible = false;
+        spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;

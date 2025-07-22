@@ -219,6 +219,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bbc5e7be-6f22-4408-926b-a91f2625eacf",
+                    "path": "<Pointer>/{Point}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",

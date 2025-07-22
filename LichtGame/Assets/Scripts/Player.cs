@@ -37,6 +37,8 @@ public class Player : MonoBehaviour
     public bool canLeftAttack = true;
     private int comboIndex = 0; 
     private Coroutine performingLeftAttackCoroutine;
+    [SerializeField] private Camera worldCamera;
+    private Vector2 lookDirection;
 
     [Header("Damage Taken")]
     public float invincibilityDuration = 1.5f;
@@ -64,6 +66,14 @@ public class Player : MonoBehaviour
     {
         if (isDashing || isAttacking) return;
         rb.linearVelocity = new Vector2(xMovement * xMoveSpeed, yMovement * yMoveSpeed);
+    }
+
+    // Look //
+    public void Look(InputAction.CallbackContext context)
+    {
+        Vector2 mouseScreenPos = context.ReadValue<Vector2>();
+        Vector2 worldMousePos = worldCamera.ScreenToWorldPoint(mouseScreenPos);
+        lookDirection = worldMousePos - rb.position;
     }
 
     // Movement //
@@ -148,6 +158,8 @@ public class Player : MonoBehaviour
         if (comboIndex == 3) return;
         if (context.performed && canLeftAttack)
         {
+            animator.SetFloat("LookX", lookDirection.x);
+            animator.SetFloat("LookY", lookDirection.y);
             isAttacking = true;
             rb.linearVelocity = Vector2.zero;
             Debug.Log("left attacking");
@@ -174,12 +186,12 @@ public class Player : MonoBehaviour
                 swordWeapon.LeftAttack2();
                 break;
             case 3:
+                // TODO fix ending of anim it looks laggy
                 swordWeapon.LeftAttack3();
                 break;
         }
 
         // if haven't clicked left click before timer finishes, reset to zero state
-        // TODO if you spam click, you stay in here bc it never resets after the waitfor seconds 
         yield return new WaitForSeconds(0.58f);
         if (comboIndex == 3)
         {

@@ -27,11 +27,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashDuration = 0.3f;
     [SerializeField] private float dashCooldown = 1f;
     private Vector2 dashDirection;
-    bool isDashing;
+    bool isDashing = false;
     bool canDash = true;
     TrailRenderer trailRenderer;
 
     [Header("Attack")]
+    bool isAttacking = false;
     [SerializeField] private BaseWeapon swordWeapon;
     public bool canLeftAttack = true;
     private int comboIndex = 0; 
@@ -61,7 +62,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (isDashing) return;
+        if (isDashing || isAttacking) return;
         rb.linearVelocity = new Vector2(xMovement * xMoveSpeed, yMovement * yMoveSpeed);
     }
 
@@ -147,6 +148,8 @@ public class Player : MonoBehaviour
         if (comboIndex == 3) return;
         if (context.performed && canLeftAttack)
         {
+            isAttacking = true;
+            rb.linearVelocity = Vector2.zero;
             Debug.Log("left attacking");
             // if in combo, cancel coroutine and start another (next attack), or just start the first one
             if (performingLeftAttackCoroutine != null)
@@ -184,6 +187,7 @@ public class Player : MonoBehaviour
         }
         comboIndex = 0;
         animator.SetInteger("LeftAttackCombo", comboIndex);
+        isAttacking = false;
     }
 
     private IEnumerator leftAtkCooldown()

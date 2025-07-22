@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     private Transform playerTransform;
 
     [Header("Movement")]
-    public Rigidbody2D rb;
+    private Rigidbody2D rb;
     [SerializeField] private float xMoveSpeed;
     [SerializeField] private float yMoveSpeed;
     private float xMovementLast = 0f;
@@ -32,6 +32,10 @@ public class Player : MonoBehaviour
     TrailRenderer trailRenderer;
 
     [Header("Attack")]
+    [SerializeField] private BaseWeapon swordWeapon;
+    public bool canLeftAttack = true;
+    private int comboIndex = 0; 
+    private Coroutine performingLeftAttackCoroutine;
 
     [Header("Damage Taken")]
     public float invincibilityDuration = 1.5f;
@@ -61,6 +65,7 @@ public class Player : MonoBehaviour
         rb.linearVelocity = new Vector2(xMovement * xMoveSpeed, yMovement * yMoveSpeed);
     }
 
+    // Movement //
     public void Move(InputAction.CallbackContext context)
     {
         animator.SetBool("isMoving", true);
@@ -126,6 +131,54 @@ public class Player : MonoBehaviour
         canDash = true;
 
     }
+
+    // Damage //
+    public void LeftAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed && canLeftAttack)
+        {
+            Debug.Log("left attacking");
+            // if in combo, cancel coroutine and start another (next attack), or just start the first one
+            if (performingLeftAttackCoroutine != null)
+            {
+                StopCoroutine(performingLeftAttackCoroutine);
+            }
+            performingLeftAttackCoroutine = StartCoroutine(performLeftAttack());
+        }
+    }
+
+    private IEnumerator performLeftAttack()
+    {
+        StartCoroutine(leftAtkCooldown());
+        comboIndex += 1;
+        if (comboIndex == 1)
+        {
+            animator.SetInteger("LeftAttackCombo", comboIndex);
+            swordWeapon.LeftAttack1();
+        }
+        else if (comboIndex == 2)
+        {
+            animator.SetInteger("LeftAttackCombo", comboIndex);
+            swordWeapon.LeftAttack2();
+            
+        }
+
+        // if haven't clicked left click before timer finishes, reset to zero state
+
+        // TODO if you spam click, you stay in here bc it never resets after the waitfor seconds 
+        yield return new WaitForSeconds(0.58f);
+        comboIndex = 0;
+        animator.SetInteger("LeftAttackCombo", comboIndex);
+    }
+
+    private IEnumerator leftAtkCooldown()
+    {
+        canLeftAttack = false;
+        yield return new WaitForSeconds(0.3f);
+        canLeftAttack = true;
+    }
+
+    
 
     public void TakeDamage()
     {

@@ -134,7 +134,8 @@ public class Player : MonoBehaviour
 
     // Damage //
     public void LeftAttack(InputAction.CallbackContext context)
-    {   
+    {
+        if (comboIndex == 3) return;
         if (context.performed && canLeftAttack)
         {
             Debug.Log("left attacking");

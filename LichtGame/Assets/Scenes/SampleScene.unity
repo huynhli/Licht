@@ -503,7 +503,6 @@ MonoBehaviour:
   dashCooldown: 0.7
   swordWeapon: {fileID: 1917029678}
   canLeftAttack: 1
-  comboResetTime: 5
   invincibilityDuration: 1.5
   isInvincible: 0
   dashSFX: {fileID: 0}

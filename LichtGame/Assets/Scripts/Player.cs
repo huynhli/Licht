@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
 
     // Damage //
     public void LeftAttack(InputAction.CallbackContext context)
-    {
+    {   
         if (context.performed && canLeftAttack)
         {
             Debug.Log("left attacking");
@@ -151,22 +151,27 @@ public class Player : MonoBehaviour
     {
         StartCoroutine(leftAtkCooldown());
         comboIndex += 1;
-        if (comboIndex == 1)
+        animator.SetInteger("LeftAttackCombo", comboIndex);
+        switch (comboIndex)
         {
-            animator.SetInteger("LeftAttackCombo", comboIndex);
-            swordWeapon.LeftAttack1();
-        }
-        else if (comboIndex == 2)
-        {
-            animator.SetInteger("LeftAttackCombo", comboIndex);
-            swordWeapon.LeftAttack2();
-            
+            case 1:
+                swordWeapon.LeftAttack1();
+                break;
+            case 2:
+                swordWeapon.LeftAttack2();
+                break;
+            case 3:
+                swordWeapon.LeftAttack3();
+                break;
         }
 
         // if haven't clicked left click before timer finishes, reset to zero state
-
         // TODO if you spam click, you stay in here bc it never resets after the waitfor seconds 
         yield return new WaitForSeconds(0.58f);
+        if (comboIndex == 3)
+        {
+            yield return new WaitForSeconds(0.7f);
+        }
         comboIndex = 0;
         animator.SetInteger("LeftAttackCombo", comboIndex);
     }

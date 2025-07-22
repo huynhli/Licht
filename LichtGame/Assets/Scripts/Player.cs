@@ -160,6 +160,10 @@ public class Player : MonoBehaviour
         {
             animator.SetFloat("LookX", lookDirection.x);
             animator.SetFloat("LookY", lookDirection.y);
+            animator.SetFloat("LastInputX", lookDirection.x);
+            animator.SetFloat("LastInputY", lookDirection.y);
+
+
             isAttacking = true;
             rb.linearVelocity = Vector2.zero;
             Debug.Log("left attacking");
@@ -183,6 +187,7 @@ public class Player : MonoBehaviour
                 swordWeapon.LeftAttack1();
                 break;
             case 2:
+                // TODO fix ending of anim it cuts abruptly
                 swordWeapon.LeftAttack2();
                 break;
             case 3:

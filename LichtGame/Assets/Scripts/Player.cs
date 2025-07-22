@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
     bool isAttacking = false;
     [SerializeField] private BaseWeapon swordWeapon;
     public bool canLeftAttack = true;
-    private int comboIndex = 0; 
+    private int comboIndex = 0;
     private Coroutine performingLeftAttackCoroutine;
     [SerializeField] private Camera worldCamera;
     private Vector2 lookDirection;
@@ -133,7 +133,7 @@ public class Player : MonoBehaviour
         {
             dashDirection = Vector2.right;
         }
-        
+
 
         rb.linearVelocity = new Vector2(dashDirection.x * dashSpeed, dashDirection.y * dashSpeed);
 
@@ -214,7 +214,7 @@ public class Player : MonoBehaviour
         canLeftAttack = true;
     }
 
-    
+
 
     public void TakeDamage()
     {
@@ -236,7 +236,8 @@ public class Player : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            rb.linearVelocity = Vector2.zero;
+            stopMoving;
+            StartCoroutine(deathAnim());
 
             // SoundManager.instance.PlaySFXClip(deathSFX, 4f);
         }
@@ -262,5 +263,10 @@ public class Player : MonoBehaviour
         playerTransform.position = Vector3.zero;
         isInvincible = true;
         rb.linearVelocity = Vector2.zero;
+    }
+
+    private void deathAnim()
+    {
+        
     }
 }

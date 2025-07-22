@@ -499,7 +499,7 @@ MonoBehaviour:
   yMoveSpeed: 4
   dashAbilityGet: 0
   dashSpeed: 10
-  dashDuration: 0.2
+  dashDuration: 0.3
   dashCooldown: 0.7
   swordWeapon: {fileID: 1917029678}
   canLeftAttack: 1

@@ -99,18 +99,24 @@ public class Player : MonoBehaviour
         canDash = false;
         isDashing = true;
         isInvincible = true;
+        animator.SetBool("isDashing", true);
         trailRenderer.emitting = true;
         spriteRenderer.color = new Color(0.528f, 0.528f, 0.528f, 1f);
 
         // SoundManager.instance.PlaySFXClip(dashSFX, 4f);
+
+        // TODO change to vector instead of saving each individually
         if (xMovement != 0 || yMovement != 0)
         {
             dashDirection = new Vector2(xMovement, yMovement).normalized;
-
+            animator.SetFloat("DashX", xMovement);
+            animator.SetFloat("DashY", yMovement);
         }
         else if (xMovementLast != 0 || yMovementLast != 0)
         {
             dashDirection = new Vector2(xMovementLast, yMovementLast).normalized;
+            animator.SetFloat("DashX", xMovementLast);
+            animator.SetFloat("DashY", yMovementLast);
         }
         else
         {
@@ -126,6 +132,9 @@ public class Player : MonoBehaviour
         trailRenderer.emitting = false;
         isInvincible = false;
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+        animator.SetFloat("DashX", 0f);
+        animator.SetFloat("DashY", 0f);
+        animator.SetBool("isDashing", false);
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;

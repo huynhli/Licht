@@ -521,6 +521,8 @@ MonoBehaviour:
   dashSFX: {fileID: 0}
   deathSFX: {fileID: 0}
   playerHurtSFX: {fileID: 0}
+  mana: 0
+  manaActive: 0
 --- !u!70 &312256439
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -656,7 +658,7 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 0.39215687}
+      key0: {r: 0, g: 1, b: 1, a: 0.39215687}
       key1: {r: 1, g: 1, b: 1, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}

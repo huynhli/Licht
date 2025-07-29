@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashCooldown = 1f;
     private Vector2 dashDirection;
     bool isDashing = false;
-    bool canDash = true;
+    bool canDash = false;
     TrailRenderer trailRenderer;
 
     [Header("Attack")]
@@ -49,6 +49,10 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip dashSFX;
     [SerializeField] private AudioClip deathSFX;
     [SerializeField] private AudioClip playerHurtSFX;
+
+    [Header("Light Attack")]
+    public float mana = 0f;
+    public bool manaActive = false;
 
     void Start()
     {
@@ -158,6 +162,12 @@ public class Player : MonoBehaviour
         if (comboIndex == 3) return;
         if (context.performed && canLeftAttack)
         {
+            mana += 50f;
+            if (mana >= 100f)
+            {
+                StartCoroutine(manaBarDeplete());
+            }
+
             animator.SetFloat("LookX", lookDirection.x);
             animator.SetFloat("LookY", lookDirection.y);
             animator.SetFloat("LastInputX", lookDirection.x);
@@ -224,6 +234,19 @@ public class Player : MonoBehaviour
         }
     }
 
+    public IEnumerator manaBarDeplete()
+    {
+        canDash = true;
+        while (mana > 0f)
+        {
+            mana--;
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        mana = 0f;
+        canDash = false;
+    }
+
     public IEnumerator TakeDamageRoutine()
     {
         isInvincible = true;
@@ -236,7 +259,7 @@ public class Player : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            stopMoving;
+            stopMoving();
             StartCoroutine(deathAnim());
 
             // SoundManager.instance.PlaySFXClip(deathSFX, 4f);
@@ -265,8 +288,8 @@ public class Player : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
     }
 
-    private void deathAnim()
+    private IEnumerator deathAnim()
     {
-        
+        yield return new WaitForSeconds(1f);
     }
 }

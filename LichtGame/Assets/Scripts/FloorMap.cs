@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using System;
 using System.Collections.Generic;
 
@@ -45,6 +46,13 @@ public class Room {
 
 public class FloorMap : MonoBehaviour
 {
+    public Tilemap tilemap;
+    public Tile tile;
+
+    public int dungeonSize = 10;       // number of rooms per row/column
+    public int tilesPerRoom = 30;      // each room = 30x30 tiles
+
+
     // dont explicitly use ints for number rooms. 
     // room is found by taking each individual digit of currentRoom# inputted,
     // so room 11 is row1, col1 for dungeon[][], etc.
@@ -67,7 +75,7 @@ public class FloorMap : MonoBehaviour
 
     // MAKE THESE LEFT SKEW
     List<List<Room>> dungeon;
-    
+
     void PrintDungeon()
     {
         for (int row = 0; row < dungeon.Count; row++)
@@ -82,7 +90,7 @@ public class FloorMap : MonoBehaviour
             Debug.Log(line);
         }
     }
-    
+
     // TODO: dont need rooms for every empty room
     List<List<Room>> makeFloorMap()
     {
@@ -107,10 +115,10 @@ public class FloorMap : MonoBehaviour
     void Start()
     {
         dungeon = makeFloorMap();
-        PrintDungeon();
         int seed = GameManagerSingleton.Instance.dungeonSeed;
         int level = GameManagerSingleton.Instance.level;
         GenerateDungeon(seed, level);
+        PrintDungeon();
     }
 
     void GenerateDungeon(int seed, int level)
@@ -127,7 +135,7 @@ public class FloorMap : MonoBehaviour
         // what does this mean? ...
         // it means:
         // - keep them thinking, but dont make them think about things they dont need to think abt
-        
+
         // timer mechanic:
         // we reset if we dont reach the boss room fast enough.
         // keep a counter of how many resets, and change final boss dialogue
@@ -139,10 +147,6 @@ public class FloorMap : MonoBehaviour
         // shop items should be temporary one-time usage or perma cosmetic
         // - if ppl replay the game, i think dialogue should be different the second time, it would be a cool addition
 
-        int numRooms = (int)Math.Floor(UnityEngine.Random.Range(0f, 3f) + 6f + (level * 2.4f));
-
-        int numCurRooms = 0;
-
         // TODO: queue or stack? stack has chance for VERY linear, queue has chance for much more spread
         // update: queue or balanced avl?
         // or can have balanced counter like avl trees
@@ -153,62 +157,76 @@ public class FloorMap : MonoBehaviour
 
         // Binding of Isaac
         // For each cell in the queue, it loops over the 4 cardinal directions and does the following:
-            // Determine the neighbour cell by adding +10/-10/+1/-1 to the currency cell.
-            // If the neighbour cell is already occupied, give up
-            // If the neighbour cell itself has more than one filled neighbour, give up.
-            // If we already have enough rooms, give up
-            // Random 50% chance, give up
-            // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
+        // Determine the neighbour cell by adding +10/-10/+1/-1 to the currency cell.
+        // If the neighbour cell is already occupied, give up
+        // If the neighbour cell itself has more than one filled neighbour, give up.
+        // If we already have enough rooms, give up
+        // Random 50% chance, give up
+        // Otherwise, mark the neighbour cell as having a room in it, and add it to the queue.
 
-        var roomQueue = new Queue<Room>();
-        Room startRoom = dungeon[5][6]; // example starting point
+        UnityEngine.Random.InitState(seed);
+
+        int numRooms = Mathf.FloorToInt(UnityEngine.Random.Range(0f, 3f) + 6f + (level * 2.4f));
+        int numCurRooms = 0;
+
+        Queue<Room> roomQueue = new Queue<Room>();
+        Room startRoom = dungeon[5][6];
         roomQueue.Enqueue(startRoom);
 
         bool haveBossRoom = false;
 
-        while (numCurRooms < numRooms && roomQueue.Count > 0) {
+        while (numCurRooms < numRooms && roomQueue.Count > 0)
+        {
             Room curRoom = roomQueue.Dequeue();
-            curRoom.initType(numCurRooms > numRooms/3*2, haveBossRoom, numCurRooms == numRooms-1);
-            if (curRoom.getTypeValue == 9) haveBossRoom = true;
+            curRoom.initType(numCurRooms > numRooms / 3 * 2, haveBossRoom, numCurRooms == numRooms - 1);
+
+            if (curRoom.getTypeValue() == 8) haveBossRoom = true;
             numCurRooms++;
 
             int curRoomNum = curRoom.getRoomNumber();
-            int row = curRoomNum / 10;
-            int col = curRoomNum % 10;
+            int row = curRoomNum / dungeonSize;
+            int col = curRoomNum % dungeonSize;
+
+            // Draw the room on Tilemap
+            Vector3Int origin = new Vector3Int(col * tilesPerRoom, row * tilesPerRoom, 0);
+            DrawRoomOnTilemap(curRoom, origin);
 
             // directions: right, up, left, down
-            var directions = new List<(int dr, int dc)> {
-                (0, 1), (1, 0), (0, -1), (-1, 0)
-            };
-
+            var directions = new List<(int dr, int dc)> { (0, 1), (1, 0), (0, -1), (-1, 0) };
             int addingRooms = 0;
-            foreach (var (dr, dc) in directions) {
+
+            foreach (var (dr, dc) in directions)
+            {
                 if (addingRooms > 1) break;
+
                 int newRow = row + dr;
                 int newCol = col + dc;
 
-                // edge / break case
-                if (newRow < 0 || newRow >= 10 || newCol < 0 || newCol >= 10)
+                if (newRow < 0 || newRow >= dungeonSize || newCol < 0 || newCol >= dungeonSize)
                     continue;
 
                 Room neighbour = dungeon[newRow][newCol];
 
-                // skip if already filled, has too many neighbours, or random reject
-                if (neighbour.getTypeValue() != 0 ||
-                    neighbour.neighbours.Count > 1 ||
-                    UnityEngine.Random.value < 0.5f) {
+                if (neighbour.getTypeValue() != 0 || neighbour.neighbours.Count > 1 || UnityEngine.Random.value < 0.5f)
                     continue;
-                }
 
-                // otherwise, connect and add to queue
                 curRoom.neighbours.Add(neighbour);
                 neighbour.neighbours.Add(curRoom);
                 roomQueue.Enqueue(neighbour);
                 addingRooms++;
             }
-
         }
-        
-        
+    }
+    
+    void DrawRoomOnTilemap(Room room, Vector3Int origin)
+    {
+        for (int x = 0; x < tilesPerRoom; x++)
+        {
+            for (int y = 0; y < tilesPerRoom; y++)
+            {
+                Vector3Int tilePos = new Vector3Int(origin.x + x, origin.y + y, 0);
+                tilemap.SetTile(tilePos, tile);
+            }
+        }
     }
 }

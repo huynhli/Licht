@@ -255,6 +255,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24c832f71837d84eaae59fe692b0130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tilemap: {fileID: 118790955}
+  tile: {fileID: 11400000, guid: e9423bdab5113bf49a4d116cf6370c16, type: 2}
+  dungeonSize: 10
+  tilesPerRoom: 30
 --- !u!1 &126361270
 GameObject:
   m_ObjectHideFlags: 0
